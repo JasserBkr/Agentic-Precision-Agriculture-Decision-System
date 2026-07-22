@@ -69,6 +69,48 @@ def get_forecast(
     return data
  
  
-# TODO (Week 1): add a function converting this raw response into a tidy
-# pandas DataFrame or xarray Dataset with a proper datetime index — this
-# is what data_access/fusion.py will consume in Week 2.
+HISTORICAL_FORECAST_URL = "https://historical-forecast-api.open-meteo.com/v1/forecast"
+
+
+def get_historical_forecast(
+    lat: float,
+    lon: float,
+    start_date,
+    end_date,
+    daily_vars: list[str] | None = None,
+    hourly_vars: list[str] | None = None,
+) -> dict:
+    """
+    Fetch archived weather + soil data from Open-Meteo's Historical Forecast
+    API. This endpoint archives the LIVE forecast model's output (not
+    reanalysis), so its response schema — variable names, units, daily/hourly
+    structure — is identical to get_forecast(). This is critical for
+    fusion.py compatibility.
+
+    `start_date` / `end_date` are date objects or YYYY-MM-DD strings.
+
+    Returns the same shape as get_forecast() (a dict with "daily" and "hourly"
+    keys), so fusion.py's weather_response_to_daily_df() consumes it without
+    modification.
+    """
+    params = {
+        "latitude": lat,
+        "longitude": lon,
+        "daily": ",".join(daily_vars or DEFAULT_DAILY_VARS),
+        "hourly": ",".join(hourly_vars or DEFAULT_HOURLY_VARS),
+        "start_date": str(start_date),
+        "end_date": str(end_date),
+        "timezone": "auto",
+    }
+    resp = requests.get(HISTORICAL_FORECAST_URL, params=params, timeout=180)
+    resp.raise_for_status()
+    data = resp.json()
+
+    n_daily = len(daily_vars or DEFAULT_DAILY_VARS)
+    n_hourly = len(hourly_vars or DEFAULT_HOURLY_VARS)
+    log.info(
+        "Fetched historical forecast for (%.4f, %.4f): %s to %s "
+        "(%d daily vars, %d hourly vars)",
+        lat, lon, start_date, end_date, n_daily, n_hourly,
+    )
+    return data

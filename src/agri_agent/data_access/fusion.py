@@ -217,3 +217,37 @@ def build_fused_dataset(
     )
     return merged
 
+
+# ---------------------------------------------------------------------
+# Persistence: parquet round-trip (preserves datetime64 dtypes)
+# ---------------------------------------------------------------------
+
+
+def save_fused_dataset(df: pd.DataFrame, path: str) -> None:
+    """
+    Save a fused DataFrame to parquet. Parquet preserves datetime64 and
+    numeric dtypes across round-trips — CSV does not, and silently
+    converting dates to strings breaks every downstream date comparison.
+    """
+    df.to_parquet(path, index=False)
+    date_min = df["date"].min().date() if len(df) else None
+    date_max = df["date"].max().date() if len(df) else None
+    log.info(
+        "Saved fused dataset to %s: %d rows, date range %s to %s",
+        path, len(df), date_min, date_max,
+    )
+
+
+def load_fused_dataset(path: str) -> pd.DataFrame:
+    """
+    Load a fused DataFrame from parquet, restoring datetime64 columns.
+    """
+    df = pd.read_parquet(path)
+    date_min = df["date"].min().date() if len(df) else None
+    date_max = df["date"].max().date() if len(df) else None
+    log.info(
+        "Loaded fused dataset from %s: %d rows, date range %s to %s",
+        path, len(df), date_min, date_max,
+    )
+    return df
+
