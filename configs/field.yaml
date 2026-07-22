@@ -1,0 +1,28 @@
+# Merguellil JECAM Site: Kairouan Plain, Tunisia
+# Coordinates centered on the intensive monitoring zone of the Kairouan plain.
+
+field_id: "field_merguellil_01"
+field_name: "Merguellil Agricultural Plain - Representative Plot"
+
+# Bounding box in WGS84 (lon/lat)
+# Centered roughly at 35.56°N, 9.95°E to capture the irrigated agricultural perimeter.
+bbox:
+  min_lon: 9.940
+  min_lat: 35.550
+  max_lon: 9.960
+  max_lat: 35.570
+
+# Centroid for point-based API calls (e.g., Open-Meteo)
+centroid:
+  lon: 9.950
+  lat: 35.560
+
+# Metadata based on JECAM site characteristics
+crop_type: "wheat"           # Most common monitored crop in this zone
+planting_date: "2026-03-01"   # Representative of the spring season monitoring
+soil_type: "sandy loam"       # Typical texture for this alluvial plain
+
+# Sentinel-2 search parameters
+# 20% is standard; in this semi-arid region, cloud cover is often lower, 
+# but 20% ensures robustness during the rainy spring season.
+max_cloud_cover_pct: 20

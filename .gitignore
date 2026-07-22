@@ -1,0 +1,33 @@
+# --- Secrets: never commit these ---
+.env
+*.json
+!configs/*.json
+credentials/
+*.key
+
+# --- Data: regenerable, kept local only ---
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# --- Python ---
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+
+# --- Notebooks ---
+.ipynb_checkpoints/
+
+# --- OS / editor ---
+.DS_Store
+.vscode/
+*.swp
+
+# --- Earth Engine / Google Cloud ---
+*-service-account.json
+.config/earthengine/
