@@ -41,6 +41,13 @@ src/agri_agent/
 uv run python scripts/run_pipeline.py
 ```
 
+To ask your own questions in an interactive loop (type `exit`/`quit` or Ctrl-D
+to leave):
+
+```bash
+uv run python scripts/run_pipeline.py --interactive
+```
+
 ## Running tests
 
 ```bash

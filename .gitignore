@@ -20,6 +20,9 @@ venv/
 build/
 dist/
 
+# --- Training artifacts ---
+lightning_logs/
+
 # --- Notebooks ---
 .ipynb_checkpoints/
 

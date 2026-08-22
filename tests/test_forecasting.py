@@ -8,7 +8,6 @@ from agri_agent.forecasting.chronos_model import (
     _fill_covariate_gaps,
     forecast_soil_moisture,
 )
-from agri_agent.forecasting.data_prep import PAST_ONLY_COLS
 from agri_agent.forecasting.evaluate import compute_metrics
 
 

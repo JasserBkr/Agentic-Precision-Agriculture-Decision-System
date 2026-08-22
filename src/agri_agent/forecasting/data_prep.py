@@ -14,12 +14,19 @@ log = get_logger(__name__)
 
 TARGET_COL = "iot_soil_moisture_mean"
 
+# Removed weather_soil_moisture_{0_to_1cm,1_to_3cm,3_to_9cm}_mean from
+# FUTURE_KNOWN_COLS because they are near-duplicates of the forecast
+# target (iot_soil_moisture_mean).  iot.py's simulate_soil_moisture_stream()
+# constructs the target directly from weather_soil_moisture_0_to_1cm_mean
+# (Open-Meteo's own modeled value) plus injected noise and dropout, so
+# feeding this covariate (and its correlated depth neighbors) back into the
+# model leaks the answer.  Measured Pearson correlations on the 2-year
+# dataset: 0_to_1cm r=0.999, 1_to_3cm r=0.993, 3_to_9cm r=0.962.
+# Ablation on the 724/7 split confirmed removal improves Chronos-2 from
+# MASE=0.2112 (all 5 covariates) to MASE=0.1542 (precipitation+ET0 only).
 FUTURE_KNOWN_COLS = [
     "precipitation_sum",
     "et0_fao_evapotranspiration",
-    "weather_soil_moisture_0_to_1cm_mean",
-    "weather_soil_moisture_1_to_3cm_mean",
-    "weather_soil_moisture_3_to_9cm_mean",
 ]
 
 PAST_ONLY_COLS = ["NDVI", "NDWI"]

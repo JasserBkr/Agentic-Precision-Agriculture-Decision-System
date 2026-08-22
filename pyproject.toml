@@ -24,6 +24,8 @@ dependencies = [
     # against the Chronos-2 release notes before Week 3.
     "chronos-forecasting",
     "torch",
+    "neuralforecast>=1.7",
+    "statsmodels>=0.14",
     "pyarrow",
     "pandas>=2.2",
     "numpy>=1.26",
@@ -31,6 +33,9 @@ dependencies = [
     # --- Agent ---
     "langgraph>=0.2",
     "langchain>=0.2",
+    "langchain-openai",
+    "langchain-google-genai",
+    "langchain-groq",
  
     # --- Dashboard ---
     "streamlit>=1.35",
@@ -54,3 +59,12 @@ build-backend = "hatchling.build"
  
 [tool.hatch.build.targets.wheel]
 packages = ["src/agri_agent"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[tool.ruff.lint.per-file-ignores]
+# generate_diagnostic_plots.py deliberately manipulates sys.path before its
+# imports so it can be executed directly as a standalone script.
+"scripts/generate_diagnostic_plots.py" = ["E402"]

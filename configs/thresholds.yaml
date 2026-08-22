@@ -1,0 +1,55 @@
+# Agronomic thresholds used by the fusion agent (STEP 2c rebuild).
+#
+# NOTE ON `trigger`: it is intentionally NOT stored here. The loader
+# (agri_agent.agent.bundle.load_agronomic_thresholds) computes it from
+# field_capacity, wilting_point, and the growth stage's mad_fraction as
+#   trigger = field_capacity - mad_fraction * (field_capacity - wilting_point)
+# so a hand-edited YAML value can never silently drift from the formula it
+# claims to represent.
+
+crops:
+  wheat:
+    source: "FAO Irrigation and Drainage Paper 56 (Allen et al., 1998); FC/WP for medium-textured loam per FAO Annex 1; wheat MAD 0.55 mid-season."
+    soil:
+      texture: "loam"
+    water:
+      field_capacity: 0.30        # m3/m3
+      wilting_point: 0.12         # m3/m3
+    irrigation:
+      target_range: [0.20, 0.30]  # m3/m3
+    vigor_zscore_bands:
+      normal: [-1.0, 1.0]
+      watch: [-2.0, -1.0]
+      anomaly: [-999.0, -2.0]
+    growth_stages:
+      establishment:
+        mad_fraction: 0.50
+      mid_season:
+        mad_fraction: 0.55
+      flowering:
+        mad_fraction: 0.45
+      maturity:
+        mad_fraction: 0.60
+
+  barley:
+    source: "FAO Irrigation and Drainage Paper 56 (Allen et al., 1998); barley Kc/MAD stage splits per FAO Table 22; FC/WP for loam per FAO Annex 1."
+    soil:
+      texture: "loam"
+    water:
+      field_capacity: 0.28        # m3/m3
+      wilting_point: 0.11         # m3/m3
+    irrigation:
+      target_range: [0.19, 0.28]  # m3/m3
+    vigor_zscore_bands:
+      normal: [-1.0, 1.0]
+      watch: [-2.0, -1.0]
+      anomaly: [-999.0, -2.0]
+    growth_stages:
+      establishment:
+        mad_fraction: 0.50
+      mid_season:
+        mad_fraction: 0.55
+      flowering:
+        mad_fraction: 0.45
+      maturity:
+        mad_fraction: 0.60

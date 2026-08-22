@@ -6,7 +6,7 @@ for Chronos-2, and run an actual zero-shot forecast.
 from agri_agent.forecasting.chronos_model import forecast_soil_moisture
 from agri_agent.forecasting.data_prep import to_chronos_context_df, to_chronos_future_df
 from agri_agent.utils.logging_config import get_logger
-from run_pipeline import load_field_config, main as run_week1_2_pipeline
+from scripts.run_pipeline import load_field_config, main as run_week1_2_pipeline
 
 log = get_logger(__name__)
 
