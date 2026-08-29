@@ -1,4 +1,0 @@
-streamlit>=1.38
-streamlit-folium>=0.23
-folium>=0.17
-plotly>=5.24
