@@ -36,6 +36,20 @@ OVER_IRRIGATION_RAIN_MM = 5.0
 # Intentionally a module-level constant, not a magic number inside the check.
 MAX_CONFIDENCE_ON_INSUFFICIENT_FORECAST = 0.5
 
+# Stable machine-readable rule IDs. Every problem string is prefixed with
+# "[<ID>] " so the evaluation harness can attribute failures to individual
+# rules without parsing prose. The human-readable message always follows
+# the prefix unchanged (tests assert on those substrings).
+RULE_GROUNDING = "GROUNDING"
+RULE_RAIN_OFFSET = "R1_RAIN_OFFSET"
+RULE_STRESS_NOACTION = "R2_STRESS_NOACTION"
+RULE_FERTILIZE_THRIVING = "R3_FERTILIZE_THRIVING"
+RULE_CONFIDENCE_CEILING = "R4_CONFIDENCE_CEILING"
+
+
+def _tag(rule_id: str, message: str) -> str:
+    return f"[{rule_id}] {message}"
+
 
 def _signal_value(bundle_sub: dict, signal_name: str):
     for s in bundle_sub.get("signals", []):
@@ -88,8 +102,11 @@ def validate_recommendation(
     for contrib in cited:
         if contrib.signal_name not in real:
             problems.append(
-                f"Recommendation cites signal '{contrib.signal_name}' which is not "
-                "present in the gathered bundle."
+                _tag(
+                    RULE_GROUNDING,
+                    f"Recommendation cites signal '{contrib.signal_name}' which is not "
+                    "present in the gathered bundle.",
+                )
             )
 
     # 2a. Over-irrigation risk -------------------------------------------
@@ -97,9 +114,12 @@ def validate_recommendation(
         precip = _forecast_precip_total(bundle.weather_forecast)
         if precip is not None and precip >= OVER_IRRIGATION_RAIN_MM:
             problems.append(
-                f"Over-irrigation risk: action is 'irrigate_now' but "
-                f"{precip:.1f} mm rain is forecast over the window "
-                f"(>= {OVER_IRRIGATION_RAIN_MM} mm)."
+                _tag(
+                    RULE_RAIN_OFFSET,
+                    f"Over-irrigation risk: action is 'irrigate_now' but "
+                    f"{precip:.1f} mm rain is forecast over the window "
+                    f"(>= {OVER_IRRIGATION_RAIN_MM} mm).",
+                )
             )
             conflict = True
 
@@ -107,8 +127,11 @@ def validate_recommendation(
     ndvi_z = _signal_value(bundle.vegetation, "ndvi_anomaly_z")
     if ndvi_z is not None and ndvi_z <= -2.0 and rec.irrigation.action == "no_action_needed":
         problems.append(
-            "Contradiction: NDVI anomaly z-score is <= -2.0 (crop well below its "
-            "own climatology) but irrigation action is 'no_action_needed'."
+            _tag(
+                RULE_STRESS_NOACTION,
+                "Contradiction: NDVI anomaly z-score is <= -2.0 (crop well below its "
+                "own climatology) but irrigation action is 'no_action_needed'.",
+            )
         )
         conflict = True
 
@@ -116,9 +139,12 @@ def validate_recommendation(
     if rec.fertilization.action == "apply_fertilizer":
         if ndvi_z is not None and ndvi_z >= 2.0:
             problems.append(
-                "Contradiction: action is 'apply_fertilizer' but NDVI anomaly "
-                "z-score is >= 2.0 (vigor already far above this field's "
-                "climatology) — extra fertilizer is wasteful."
+                _tag(
+                    RULE_FERTILIZE_THRIVING,
+                    "Contradiction: action is 'apply_fertilizer' but NDVI anomaly "
+                    "z-score is >= 2.0 (vigor already far above this field's "
+                    "climatology) — extra fertilizer is wasteful.",
+                )
             )
             conflict = True
 
@@ -134,9 +160,12 @@ def validate_recommendation(
         ):
             if rec_sub.confidence > MAX_CONFIDENCE_ON_INSUFFICIENT_FORECAST:
                 problems.append(
-                    f"{label.capitalize()} confidence {rec_sub.confidence:.2f} exceeds "
-                    f"the {MAX_CONFIDENCE_ON_INSUFFICIENT_FORECAST:.2f} ceiling while "
-                    "weather/soil-moisture forecast data is unavailable — lower it."
+                    _tag(
+                        RULE_CONFIDENCE_CEILING,
+                        f"{label.capitalize()} confidence {rec_sub.confidence:.2f} exceeds "
+                        f"the {MAX_CONFIDENCE_ON_INSUFFICIENT_FORECAST:.2f} ceiling while "
+                        "weather/soil-moisture forecast data is unavailable — lower it.",
+                    )
                 )
 
     return problems, conflict

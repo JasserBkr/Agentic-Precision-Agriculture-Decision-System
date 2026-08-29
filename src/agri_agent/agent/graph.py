@@ -114,7 +114,7 @@ def get_llm():
             return None
         from langchain_groq import ChatGroq
 
-        return ChatGroq(model=model or "llama-3.3-70b-versatile")
+        return ChatGroq(model=model or "openai/gpt-oss-120b")
 
     log.warning("Unknown AGRI_LLM_PROVIDER '%s'; treating as openai.", provider)
     if not os.environ.get("OPENAI_API_KEY"):

@@ -83,6 +83,7 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "matplotlib" },
     { name = "pytest" },
     { name = "ruff" },
 ]
@@ -120,6 +121,7 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "matplotlib", specifier = ">=3.7" },
     { name = "pytest", specifier = ">=8.0" },
     { name = "ruff", specifier = ">=0.5" },
 ]
