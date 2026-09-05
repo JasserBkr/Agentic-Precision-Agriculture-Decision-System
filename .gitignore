@@ -34,3 +34,6 @@ lightning_logs/
 # --- Earth Engine / Google Cloud ---
 *-service-account.json
 .config/earthengine/
+
+# --- Generated binary artifacts ---
+*.pdf
