@@ -1,4 +1,4 @@
-# Project 12 — Agentic Precision-Agriculture Decision System
+#  Agentic Precision-Agriculture Decision System
 
 **DeepShift AI Summer Internship 2026** · [Jasser Bkr](https://github.com/JasserBkr) · `main`
 
